@@ -97,4 +97,73 @@ $response->assertJson(function (AssertableJson $json) {
 });
 ```
 
-It uses an array to describe the struture and datatypes of the JSON, and then uses the Laravel fluent JSON testing API to generate the same exact assertions as the vanilla example above
+## Usage
+
+It uses an array to describe the struture and datatypes of the JSON, and then uses the Laravel fluent JSON testing API behind the scenes to generate the assertions
+
+For JSON fields that are simple data-types, you can use `string`, `integer`, `double`, `boolean` and `null` - the same as with Laravel's `whereType()` and `whereAllType()` methods.
+
+```php
+[
+    'name' => 'string',
+    'age' => 'integer',
+    'likes_fleunt_json_testing_syntax' => 'boolean'
+]
+```
+
+For arrays and objects, you can use a nested array to describe the structure of the array/object.
+
+For an object, the array must have a values subarray.
+
+```php
+[
+    'contract' => [
+        'values' => [
+            'id' => 'integer',
+            'name' => 'string'
+        ]
+    ]
+]
+```
+
+For an array, the array must have both values and count. Count representing the number of results expected in the array.
+
+```php
+[
+    'certifications' => [
+        'count' => 1,
+        'values' => [
+            'id' => 'integer',
+            'name' => 'string',
+            'description' => 'string'
+        ]
+    ]
+]
+```
+
+Nesting objects within arrays and visa versa is ofcourse allowed.
+
+```php
+[
+    'friends' => [
+        'count' => 10,
+        'values = [
+            'id' => 'integer',
+            'name' => 'string',
+            'hobbies' => [
+                'count' => 3,
+                'values' => [
+                    'id' => 'integer',
+                    'hobby' => 'string'
+                    'difficulty' => [
+                        'values' => [
+                            'name' => 'string',
+                            'score' => 'double'
+                        ]
+                    ]
+                ]
+            ]
+        ]
+    ]
+]
+```
