@@ -43,7 +43,9 @@ trait JsonAsserter
                 return false;
             }
 
-            if (! $this->isTypeValid($type)) {
+            $validTypes = ['string', 'integer', 'boolean', 'double', 'array', 'null', 'missing'];
+
+            if (! in_array($type, $validTypes)) {
                 throw new InvalidJsonTypeException("Error '$type' is not a valid type. Available options are: ".implode(', ', $validTypes));
             }
 
@@ -70,11 +72,5 @@ trait JsonAsserter
         return array_keys(array_filter($schema, function ($type) {
             return $type !== 'missing';
         }));
-    }
-
-    private function isTypeValid(string $type): bool
-    {
-        $validTypes = ['string', 'integer', 'boolean', 'double', 'array', 'null', 'missing'];
-        return in_array($type, $validTypes);
     }
 }
