@@ -9,28 +9,25 @@ use Illuminate\Testing\Fluent\AssertableJson;
 
 trait JsonAsserter
 {
-    public function assertJsonHelper(AssertableJson $json, array $structure): void
+    public function assertJsonHelper(AssertableJson $json, array $schema): void
     {
-        $topLevelKeys = array_keys($structure);
-        $topLevelTypes = $this->getTopLevelTypes($structure);
-        $nestedTypes = $this->getNestedTypes($structure);
+        $topLevelTypes = $this->getTopLevelTypes($schema);
+        $nestedTypes = $this->getNestedTypes($schema);
 
-        $json->hasAll($topLevelKeys)->whereAllType($topLevelTypes);
+        $json->hasAll(array_keys($schema))->whereAllType($topLevelTypes);
 
-        if (! empty($nestedTypes)) {
-            foreach ($nestedTypes as $field => $type) {
-                $isTypeArray = isset($type['count']);
-                if ($isTypeArray) {
-                    $json->has($field, $type['count'], function (AssertableJson $json) use ($type) {
-                        $nestedValues = $type['values'];
-                        $this->assertJsonHelper($json, $nestedValues);
-                    });
-                } else {
-                    $json->has($field, function (AssertableJson $json) use ($type) {
-                        $nestedValues = $type['values'];
-                        $this->assertJsonHelper($json, $nestedValues);
-                    });
-                }
+        foreach ($nestedTypes as $field => $type) {
+            $isTypeArray = isset($type['count']);
+            if ($isTypeArray) {
+                $json->has($field, $type['count'], function (AssertableJson $json) use ($type) {
+                    $nestedValues = $type['values'];
+                    $this->assertJsonHelper($json, $nestedValues);
+                });
+            } else {
+                $json->has($field, function (AssertableJson $json) use ($type) {
+                    $nestedValues = $type['values'];
+                    $this->assertJsonHelper($json, $nestedValues);
+                });
             }
         }
     }
@@ -38,33 +35,31 @@ trait JsonAsserter
     /**
      * @throws InvalidJsonTypeException
      */
-    private function getTopLevelTypes(array $structure): array
+    private function getTopLevelTypes(array $schema): array
     {
-        $validTypes = ['string', 'integer', 'boolean', 'double', 'array', 'null'];
-        $topLevelTypes = [];
-
-        foreach ($structure as $field => $type) {
-            if (is_string($type)) {
-                if (! in_array($type, $validTypes)) {
-                    throw new InvalidJsonTypeException("Error '$type' is not a valid type. Available options are: ".implode(', ', $validTypes));
-                }
-                $topLevelTypes[$field] = $type;
+        return array_filter($schema, function ($type) {
+            if (! is_string($type)) {
+                return false;
             }
-        }
 
-        return $topLevelTypes;
+            if (! $this->isTypeValid($type)) {
+                throw new InvalidJsonTypeException("Error '$type' is not a valid type. Available options are: ".implode(', ', $validTypes));
+            }
+
+            return true;
+        });
     }
 
-    private function getNestedTypes(array $structure): array
+    private function getNestedTypes(array $schema): array
     {
-        $nestedTypes = [];
+        return array_filter($schema, function ($type) {
+            return is_array($type);
+        });
+    }
 
-        foreach ($structure as $field => $type) {
-            if (is_array($type)) {
-                $nestedTypes[$field] = $type;
-            }
-        }
-
-        return $nestedTypes;
+    private function isTypeValid(string $type): bool
+    {
+        $validTypes = ['string', 'integer', 'boolean', 'double', 'array', 'null'];
+        return in_array($type, $validTypes);
     }
 }
