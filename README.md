@@ -31,7 +31,7 @@ Take the following JSON structure
 }
 ```
 
-Using the fluent JSON assertion system in Laravel to test the structure of the JSON we produce a test that looks like this
+Using the fluent JSON assertion system in Laravel to test the structure of the JSON we produce a test that looks like this:
 
 ```php
 $response->assertJson(function (AssertableJson $json) {
@@ -64,7 +64,7 @@ $response->assertJson(function (AssertableJson $json) {
 });
 ```
 
-Compared to the prototype assertion helper
+Compared to the prototype assertion helper:
 
 ```php
 $response->assertJson(function (AssertableJson $json) {
@@ -99,7 +99,7 @@ $response->assertJson(function (AssertableJson $json) {
 
 ## Usage
 
-It uses an array to describe the struture and datatypes of the JSON, and then uses the Laravel fluent JSON testing API behind the scenes to generate the assertions
+It uses an array to describe the struture and datatypes of the JSON, and then uses the Laravel fluent JSON testing API behind the scenes to generate the assertions.
 
 For JSON fields that are simple data-types, you can use `string`, `integer`, `double`, `boolean` and `null` - the same as with Laravel's `whereType()` and `whereAllType()` methods.
 
@@ -154,7 +154,7 @@ Nesting objects within arrays and visa versa is ofcourse allowed.
                 'count' => 3,
                 'values' => [
                     'id' => 'integer',
-                    'hobby' => 'string'
+                    'hobby' => 'string',
                     'difficulty' => [
                         'values' => [
                             'name' => 'string',
