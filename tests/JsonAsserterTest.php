@@ -68,6 +68,67 @@ class JsonAsserterTest extends TestCase
         ]);
     }
 
+    public function test_assertJsonHelper_multiLevelNestedObjects(): void
+    {
+        $assertableJson = AssertableJson::fromArray([
+            'message' => 'test data',
+            'data' => [
+                'id' => 1,
+                'name' => 'abc',
+                'test' => [
+                    'test' => [
+                        'foo' => 'bar'
+                    ]
+                ]
+            ]
+        ]);
+
+        $this->assertJsonHelper($assertableJson, [
+            'message' => 'string',
+            'data' => [
+                'values' => [
+                    'id' => 'integer',
+                    'name' => 'string',
+                    'test' => [
+                        'values' => [
+                            'test' => [
+                                'values' => [
+                                    'foo' => 'string'
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ]);
+    }
+
+    public function test_assertJsonHelper_nestSimpleArray(): void
+    {
+        $assertableJson = AssertableJson::fromArray([
+            'data' => [
+                [
+                    'id' => 1,
+                    'name' => 'foo'
+                ],
+                [
+                    'id' => 1,
+                    'name' => 'bar'
+                ]
+            ]
+        ]);
+
+        $this->assertJsonHelper($assertableJson, [
+            'data' => [
+                'count' => 2,
+                'values' => [
+                    'id' => 'integer',
+                    'name' => 'string'
+                ]
+            ]
+        ]);
+    }
+
     public function test_assertJsonHelper_missingField(): void
     {
         $assertableJson = AssertableJson::fromArray([
@@ -76,7 +137,8 @@ class JsonAsserterTest extends TestCase
 
         $this->assertJsonHelper($assertableJson, [
             'message' => 'string',
-            'test' => 'missing'
+            'test' => 'missing',
+            'other' => 'missing'
         ]);
     }
 }
