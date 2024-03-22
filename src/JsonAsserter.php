@@ -1,11 +1,10 @@
 <?php
 
-namespace Tests;
+namespace AshC\JsonAsserter;
 
-use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Testing\Fluent\AssertableJson;
 
-abstract class TestCase extends BaseTestCase
+trait JsonAsserter
 {
     public function assertJsonHelper(AssertableJson $json, array $structure): void
     {

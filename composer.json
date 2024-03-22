@@ -1,0 +1,14 @@
+{
+  "name": "ashc/jsonasserter",
+  "description": "A trait for simplifying HTTP tests in Laravel",
+  "type": "library",
+  "require": {
+    "php": "^8.2",
+    "illuminate/testing": "^11.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "AshC\\JsonAsserter\\": "src/"
+    }
+  }
+}
