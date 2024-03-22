@@ -1,5 +1,5 @@
 {
-  "name": "ashc/jsonasserter",
+  "name": "ashc/laravel-json-asserter",
   "description": "A trait for simplifying HTTP tests in Laravel",
   "type": "library",
   "license": "MIT",
