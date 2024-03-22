@@ -2,6 +2,7 @@
   "name": "ashc/jsonasserter",
   "description": "A trait for simplifying HTTP tests in Laravel",
   "type": "library",
+  "license": "MIT",
   "require": {
     "php": "^8.2",
     "illuminate/testing": "^11.0"
