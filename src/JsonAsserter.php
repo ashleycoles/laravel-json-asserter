@@ -17,7 +17,7 @@ trait JsonAsserter
 
         $json->hasAll($topLevelKeys)->whereAllType($topLevelTypes);
 
-        if (!empty($nestedTypes)) {
+        if (! empty($nestedTypes)) {
             foreach ($nestedTypes as $field => $type) {
                 $isTypeArray = isset($type['count']);
                 if ($isTypeArray) {
@@ -45,12 +45,13 @@ trait JsonAsserter
 
         foreach ($structure as $field => $type) {
             if (is_string($type)) {
-                if (!in_array($type, $validTypes)) {
-                    throw new InvalidJsonTypeException("Error '$type' is not a valid type. Available options are: " . implode(', ', $validTypes) );
+                if (! in_array($type, $validTypes)) {
+                    throw new InvalidJsonTypeException("Error '$type' is not a valid type. Available options are: ".implode(', ', $validTypes));
                 }
                 $topLevelTypes[$field] = $type;
             }
         }
+
         return $topLevelTypes;
     }
 

@@ -11,5 +11,8 @@
     "psr-4": {
       "AshC\\JsonAsserter\\": "src/"
     }
+  },
+  "require-dev": {
+    "laravel/pint": "^1.14"
   }
 }
