@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace AshC\JsonAsserter;
 
+use AshC\JsonAsserter\Exceptions\InvalidJsonTypeException;
 use Illuminate\Testing\Fluent\AssertableJson;
 
 trait JsonAsserter
@@ -29,10 +32,12 @@ trait JsonAsserter
                     });
                 }
             }
-
         }
     }
 
+    /**
+     * @throws InvalidJsonTypeException
+     */
     private function getTopLevelTypes(array $structure): array
     {
         $validTypes = ['string', 'integer', 'boolean', 'double', 'array', 'null'];
@@ -41,7 +46,7 @@ trait JsonAsserter
         foreach ($structure as $field => $type) {
             if (is_string($type)) {
                 if (!in_array($type, $validTypes)) {
-                    throw new \Exception("Error '$type' is not a valid type. Available options are: " . implode(', ', $validTypes) );
+                    throw new InvalidJsonTypeException("Error '$type' is not a valid type. Available options are: " . implode(', ', $validTypes) );
                 }
                 $topLevelTypes[$field] = $type;
             }
