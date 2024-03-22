@@ -20,16 +20,15 @@ trait JsonAsserter
 
         foreach ($nestedTypes as $field => $type) {
             $isTypeArray = isset($type['count']);
+
+            $assertions = function (AssertableJson $json) use ($type) {
+                $this->assertJsonHelper($json, $type['values']);
+            };
+
             if ($isTypeArray) {
-                $json->has($field, $type['count'], function (AssertableJson $json) use ($type) {
-                    $nestedValues = $type['values'];
-                    $this->assertJsonHelper($json, $nestedValues);
-                });
+                $json->has($field, $type['count'], $assertions);
             } else {
-                $json->has($field, function (AssertableJson $json) use ($type) {
-                    $nestedValues = $type['values'];
-                    $this->assertJsonHelper($json, $nestedValues);
-                });
+                $json->has($field, $assertions);
             }
         }
     }
