@@ -103,11 +103,14 @@ It uses an array to describe the struture and datatypes of the JSON, and then us
 
 For JSON fields that are simple data-types, you can use `string`, `integer`, `double`, `boolean` and `null` - the same as with Laravel's `whereType()` and `whereAllType()` methods.
 
+In addition to the standard Laravel types, you can use a type of `missing` to assert that the field is absent from the response.
+
 ```php
 [
     'name' => 'string',
     'age' => 'integer',
-    'likes_fleunt_json_testing_syntax' => 'boolean'
+    'likes_fleunt_json_testing_syntax' => 'boolean',
+    'example' => 'missing'
 ]
 ```
 
@@ -141,7 +144,7 @@ For an array, the array must have both values and count. Count representing the 
 ]
 ```
 
-Nesting objects within arrays and visa versa is ofcourse allowed.
+Nesting objects within arrays and vice versa is of course allowed.
 
 ```php
 [
