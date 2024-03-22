@@ -11,10 +11,12 @@ trait JsonAsserter
 {
     public function assertJsonHelper(AssertableJson $json, array $schema): void
     {
+        $presentFields = $this->getPresentFields($schema);
+        $missingFields = $this->getMissingFields($schema);
         $topLevelTypes = $this->getTopLevelTypes($schema);
         $nestedTypes = $this->getNestedTypes($schema);
 
-        $json->hasAll(array_keys($schema))->whereAllType($topLevelTypes);
+        $json->hasAll($presentFields)->whereAllType($topLevelTypes)->missingAll($missingFields);
 
         foreach ($nestedTypes as $field => $type) {
             $isTypeArray = isset($type['count']);
@@ -38,7 +40,7 @@ trait JsonAsserter
     private function getTopLevelTypes(array $schema): array
     {
         return array_filter($schema, function ($type) {
-            if (! is_string($type)) {
+            if (! is_string($type) || $type === 'missing') {
                 return false;
             }
 
@@ -57,9 +59,23 @@ trait JsonAsserter
         });
     }
 
+    private function getMissingFields(array $schema): array
+    {
+        return array_keys(array_filter($schema, function ($type) {
+            return $type === 'missing';
+        }));
+    }
+
+    private function getPresentFields(array $schema): array
+    {
+        return array_keys(array_filter($schema, function ($type) {
+            return $type !== 'missing';
+        }));
+    }
+
     private function isTypeValid(string $type): bool
     {
-        $validTypes = ['string', 'integer', 'boolean', 'double', 'array', 'null'];
+        $validTypes = ['string', 'integer', 'boolean', 'double', 'array', 'null', 'missing'];
         return in_array($type, $validTypes);
     }
 }
