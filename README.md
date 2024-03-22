@@ -99,7 +99,7 @@ $response->assertJson(function (AssertableJson $json) {
 
 ## Usage
 
-It uses an array to describe the struture and datatypes of the JSON, and then uses the Laravel fluent JSON testing API behind the scenes to generate the assertions.
+JsonAsserter uses an array to describe the structure and datatype of the JSON, and then uses the Laravel fluent JSON testing API behind the scenes to generate assertions.
 
 For JSON fields that are simple data-types, you can use `string`, `integer`, `double`, `boolean` and `null` - the same as with Laravel's `whereType()` and `whereAllType()` methods.
 
@@ -109,7 +109,7 @@ In addition to the standard Laravel types, you can use a type of `missing` to as
 [
     'name' => 'string',
     'age' => 'integer',
-    'likes_fleunt_json_testing_syntax' => 'boolean',
+    'likes_fluent_json_testing_syntax' => 'boolean',
     'example' => 'missing'
 ]
 ```
