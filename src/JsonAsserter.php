@@ -38,39 +38,36 @@ trait JsonAsserter
      */
     private function getTopLevelTypes(array $schema): array
     {
-        return array_filter($schema, function ($type) {
-            if (! is_string($type) || $type === 'missing') {
+        $topLevelEnums = array_filter($schema, function (Type|array $type) {
+            if (is_array($type) || $type->value === 'missing') {
                 return false;
             }
-
-            $validTypes = ['string', 'integer', 'boolean', 'double', 'array', 'null', 'missing'];
-
-            if (! in_array($type, $validTypes)) {
-                throw new InvalidJsonTypeException("Error '$type' is not a valid type. Available options are: ".implode(', ', $validTypes));
-            }
-
             return true;
         });
+
+        return array_map(function (Type $type) {
+            return $type->value;
+        }, $topLevelEnums);
     }
 
     private function getNestedTypes(array $schema): array
     {
-        return array_filter($schema, function ($type) {
+        return array_filter($schema, function (Type|array $type) {
             return is_array($type);
         });
     }
 
     private function getMissingFields(array $schema): array
     {
-        return array_keys(array_filter($schema, function ($type) {
-            return $type === 'missing';
+        return array_keys(array_filter($schema, function (Type|array $type) {
+            return !is_array($type) && $type->value === 'missing';
         }));
     }
 
     private function getPresentFields(array $schema): array
     {
-        return array_keys(array_filter($schema, function ($type) {
-            return $type !== 'missing';
+        return array_keys(array_filter($schema, function (Type|array $type) {
+            return !is_array($type) && $type->value !== 'missing';
         }));
     }
 }

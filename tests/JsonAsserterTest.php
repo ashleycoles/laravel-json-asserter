@@ -4,27 +4,13 @@ require_once 'vendor/autoload.php';
 
 use AshC\JsonAsserter\Exceptions\InvalidJsonTypeException;
 use AshC\JsonAsserter\JsonAsserter;
-use PHPUnit\Framework\TestCase;
+use AshC\JsonAsserter\Type;
 use Illuminate\Testing\Fluent\AssertableJson;
-
-
+use PHPUnit\Framework\TestCase;
 
 class JsonAsserterTest extends TestCase
 {
     use JsonAsserter;
-
-    public function test_assertJsonHelper_dataContainsInvalidType(): void
-    {
-        $assertableJson = AssertableJson::fromArray([
-            'message' => 'test'
-        ]);
-
-        $this->expectException(InvalidJsonTypeException::class);
-
-        $this->assertJsonHelper($assertableJson, [
-            'message' => 'invalid'
-        ]);
-    }
 
     public function test_assertJsonHelper_dataContainsAllValidTypes(): void
     {
@@ -34,16 +20,16 @@ class JsonAsserterTest extends TestCase
             'int' => 1,
             'decimal' => 1.2,
             'null' => null,
-            'array' => [1,2,3]
+            'array' => [1, 2, 3],
         ]);
 
         $this->assertJsonHelper($assertableJson, [
-            'string' => 'string',
-            'bool' => 'boolean',
-            'int' => 'integer',
-            'decimal' => 'double',
-            'null' => 'null',
-            'array' => 'array'
+            'string' => Type::STRING,
+            'bool' => Type::BOOLEAN,
+            'int' => Type::INTEGER,
+            'decimal' => Type::DOUBLE,
+            'null' => Type::NULL,
+            'array' => Type::ARRAY,
         ]);
     }
 
@@ -53,18 +39,18 @@ class JsonAsserterTest extends TestCase
             'message' => 'test data',
             'data' => [
                 'id' => 1,
-                'name' => 'abc'
-            ]
+                'name' => 'abc',
+            ],
         ]);
 
         $this->assertJsonHelper($assertableJson, [
-            'message' => 'string',
+            'message' => Type::STRING,
             'data' => [
                 'values' => [
-                    'id' => 'integer',
-                    'name' => 'string'
-                ]
-            ]
+                    'id' => Type::INTEGER,
+                    'name' => Type::STRING,
+                ],
+            ],
         ]);
     }
 
@@ -77,29 +63,29 @@ class JsonAsserterTest extends TestCase
                 'name' => 'abc',
                 'test' => [
                     'test' => [
-                        'foo' => 'bar'
-                    ]
-                ]
-            ]
+                        'foo' => 'bar',
+                    ],
+                ],
+            ],
         ]);
 
         $this->assertJsonHelper($assertableJson, [
-            'message' => 'string',
+            'message' => Type::STRING,
             'data' => [
                 'values' => [
-                    'id' => 'integer',
-                    'name' => 'string',
+                    'id' => Type::INTEGER,
+                    'name' => Type::STRING,
                     'test' => [
                         'values' => [
                             'test' => [
                                 'values' => [
-                                    'foo' => 'string'
-                                ]
-                            ]
-                        ]
-                    ]
-                ]
-            ]
+                                    'foo' => Type::STRING,
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
         ]);
     }
 
@@ -109,36 +95,71 @@ class JsonAsserterTest extends TestCase
             'data' => [
                 [
                     'id' => 1,
-                    'name' => 'foo'
+                    'name' => 'foo',
                 ],
                 [
                     'id' => 1,
-                    'name' => 'bar'
-                ]
-            ]
+                    'name' => 'bar',
+                ],
+            ],
         ]);
 
         $this->assertJsonHelper($assertableJson, [
             'data' => [
                 'count' => 2,
                 'values' => [
-                    'id' => 'integer',
-                    'name' => 'string'
-                ]
-            ]
+                    'id' => Type::INTEGER,
+                    'name' => Type::STRING,
+                ],
+            ],
+        ]);
+    }
+
+    public function test_assertJsonHelper_multipleNestedArrays(): void
+    {
+        $assertableJson = AssertableJson::fromArray([
+            'data' => [
+                [
+                    'outer' => [
+                        [
+                            'inner' => [
+                                'id' => 1,
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ]);
+
+        $this->assertJsonHelper($assertableJson, [
+            'data' => [
+                'count' => 1,
+                'values' => [
+                    'outer' => [
+                        'count' => 1,
+                        'values' => [
+                            'inner' => [
+                                'values' => [
+                                    'id' => Type::INTEGER
+                                ]
+                            ]
+                        ]
+                    ],
+                ],
+            ],
         ]);
     }
 
     public function test_assertJsonHelper_missingField(): void
     {
         $assertableJson = AssertableJson::fromArray([
-            'message' => 'test'
+            'message' => 'test',
         ]);
 
         $this->assertJsonHelper($assertableJson, [
-            'message' => 'string',
-            'test' => 'missing',
-            'other' => 'missing'
+            'message' => Type::STRING,
+            'test' => Type::MISSING,
+            'other' => Type::MISSING,
         ]);
     }
 }
