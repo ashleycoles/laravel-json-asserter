@@ -1,6 +1,6 @@
 # laravel-json-asserter
 
-A prototype tool to make writing and reading Laravel JSON assertions less painfull.
+A prototype tool to make using the Laravel Fluent JSON testing API easier to use.
 
 ## Example
 
@@ -70,105 +70,81 @@ Compared to the prototype assertion helper:
 $response->assertJson(function (AssertableJson $json) {
     $this->assertJsonHelper($json, [
         'message' => Type::STRING,
-        'data' => [
-            'count' => 1,
-            'values' => [
-                'id' => Type::INTEGER,
-                'name' => Type::STRING,
-                'age' => Type::INTEGER,
-                'start_date' => Type::STRING,
-                'contract' => [
-                    'values' => [
-                        'id' => Type::INTEGER,
-                        'name' => Type::STRING
-                    ]
-                ],
-                'certifications' => [
-                    'count' => 1,
-                    'values' => [
-                        'id' => Type::INTEGER,
-                        'name' => Type::STRING,
-                        'description' => Type::STRING
-                    ]
-                ]
-            ]
-        ]
+        'data' => Type::ARRAY(1, [
+            'id' => Type::INTEGER,
+            'name' => Type::STRING,
+            'age' => Type::INTEGER,
+            'start_date' => Type::STRING,
+            'contract' => Type::OBJECT([
+                    'id' => Type::INTEGER,
+                    'name' => Type::STRING
+            ]),
+            'certifications' => Type::ARRAY(1, [
+                    'id' => Type::INTEGER,
+                    'name' => Type::STRING,
+                    'description' => Type::STRING
+            ])
+        ]);
     ]);
 });
 ```
 
 ## Usage
 
-JsonAsserter uses an array to describe the structure and datatype of the JSON, and then uses the Laravel fluent JSON testing API behind the scenes to generate assertions.
+Use the `JsonAsserter` trait in your test classes (or TestCase.php to automatically apply to all tests).
 
-It makes a `JsonAsserter` trait available, just use the trait in your test files (or TestCase.php to automatically apply to all tests).
+The `JsonAsserter` trait provides just one public method you need to know about, `assertJsonHelper(AssertableJson $json, array $schema): void`.
 
-For JSON fields that are simple data-types, you can use `string`, `integer`, `double`, `boolean` and `null` - the same as with Laravel's `whereType()` and `whereAllType()` methods.
-
-In addition to the standard Laravel types, you can use a type of `missing` to assert that the field is absent from the response.
+It also provides a `Type` enum you can use to assert the datatypes in your JSON responses.
 
 ```php
-[
-    'name' => Type::STRING,
-    'age' => Type::INTEGER,
-    'likes_fluent_json_testing_syntax' => Type::BOOLEAN,
-    'example' => Type::MISSING
-]
+use AshC\JsonAsserter\JsonAsserter;
+
+class ExampleTest extends TestCase
+{
+    use JsonAsserter;
+    
+    public function test_example(): void
+    {
+        $response = getJson('/api/example');
+        
+        $response->assertJson(function (AssertableJson) {
+            $this->assertJsonHelper([
+                'example' => Type::STRING
+            ]);
+        });
+    }
+}
 ```
 
-For arrays and objects, you can use a nested array to describe the structure of the array/object.
+### Available types:
+- `Type::STRING`
+- `Type::INTEGER`
+- `Type::DOUBLE`
+- `Type::BOOLEAN`
+- `Type::NULL`
+- `Type::ARRAY`
+- `Type::MISSING`
 
-For an object, the array must have a values subarray.
-
-```php
-[
-    'contract' => [
-        'values' => [
-            'id' => Type::INTEGER,
-            'name' => Type::STRING
-        ]
-    ]
-]
-```
-
-For an array, the array must have both values and count. Count representing the number of results expected in the array.
-
-```php
-[
-    'certifications' => [
-        'count' => 1,
-        'values' => [
-            'id' => Type::INTEGER,
-            'name' => Type::STRING,
-            'description' => Type::STRING
-        ]
-    ]
-]
-```
-
-Nesting objects within arrays and vice versa is of course allowed.
-
-```php
-[
-    'friends' => [
-        'count' => 10,
-        'values' => [
+### Type methods:
+- `Type::OBJECT(array $schema)`
+  - Used to assert the structure of an object
+    ```php
+    $this->assertJsonHelper($assertableJson, [
+        'message' => Type::STRING,
+        'data' => Type::OBJECT([
             'id' => Type::INTEGER,
             'name' => Type::STRING,
-            'hobbies' => [
-                'count' => 3,
-                'values' => [
-                    'id' => Type::INTEGER,
-                    'hobby' => Type::STRING,
-                    'difficulty' => [
-                        'values' => [
-                            'name' => Type::STRING,
-                            'score' => Type::DOUBLE
-                        ]
-                    ]
-                ]
-            ]
-        ]
-    ]
-]
-```
+        ]),
+    ]);
+    ```
+- `Type::ARRAY(int $count, array $schema)`
+  - Used to assert the number of array items, and the structure of each item
+    ```php
+    $this->assertJsonHelper($assertableJson, [
+        'data' => Type::ARRAY(2, [
+            'id' => Type::INTEGER,
+            'name' => Type::STRING,
+        ]),
+    ]);
+    ```
