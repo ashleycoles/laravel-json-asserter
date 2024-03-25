@@ -69,26 +69,26 @@ Compared to the prototype assertion helper:
 ```php
 $response->assertJson(function (AssertableJson $json) {
     $this->assertJsonHelper($json, [
-        'message' => 'string',
+        'message' => Type::STRING,
         'data' => [
             'count' => 1,
             'values' => [
                 'id' => 'integer',
-                'name' => 'string',
+                'name' => Type::STRING,
                 'age' => 'integer',
-                'start_date' => 'string',
+                'start_date' => Type::STRING,
                 'contract' => [
                     'values' => [
                         'id' => 'integer',
-                        'name' => 'string'
+                        'name' => Type::STRING
                     ]
                 ],
                 'certifications' => [
                     'count' => 1,
                     'values' => [
                         'id' => 'integer',
-                        'name' => 'string',
-                        'description' => 'string'
+                        'name' => Type::STRING,
+                        'description' => Type::STRING
                     ]
                 ]
             ]
@@ -101,16 +101,18 @@ $response->assertJson(function (AssertableJson $json) {
 
 JsonAsserter uses an array to describe the structure and datatype of the JSON, and then uses the Laravel fluent JSON testing API behind the scenes to generate assertions.
 
+It makes a `JsonAsserter` trait available, just use the trait in your test files (or TestCase.php to automatically apply to all tests).
+
 For JSON fields that are simple data-types, you can use `string`, `integer`, `double`, `boolean` and `null` - the same as with Laravel's `whereType()` and `whereAllType()` methods.
 
 In addition to the standard Laravel types, you can use a type of `missing` to assert that the field is absent from the response.
 
 ```php
 [
-    'name' => 'string',
-    'age' => 'integer',
-    'likes_fluent_json_testing_syntax' => 'boolean',
-    'example' => 'missing'
+    'name' => Type::STRING,
+    'age' => Type::INTEGER,
+    'likes_fluent_json_testing_syntax' => Type::BOOLEAN,
+    'example' => Type::MISSING
 ]
 ```
 
@@ -122,8 +124,8 @@ For an object, the array must have a values subarray.
 [
     'contract' => [
         'values' => [
-            'id' => 'integer',
-            'name' => 'string'
+            'id' => Type::INTEGER,
+            'name' => Type::STRING
         ]
     ]
 ]
@@ -136,9 +138,9 @@ For an array, the array must have both values and count. Count representing the 
     'certifications' => [
         'count' => 1,
         'values' => [
-            'id' => 'integer',
-            'name' => 'string',
-            'description' => 'string'
+            'id' => Type::INTEGER,
+            'name' => Type::STRING,
+            'description' => Type::STRING
         ]
     ]
 ]
@@ -150,18 +152,18 @@ Nesting objects within arrays and vice versa is of course allowed.
 [
     'friends' => [
         'count' => 10,
-        'values = [
-            'id' => 'integer',
-            'name' => 'string',
+        'values' => [
+            'id' => Type::INTEGER,
+            'name' => Type::STRING,
             'hobbies' => [
                 'count' => 3,
                 'values' => [
-                    'id' => 'integer',
-                    'hobby' => 'string',
+                    'id' => Type::INTEGER,
+                    'hobby' => Type::STRING,
                     'difficulty' => [
                         'values' => [
-                            'name' => 'string',
-                            'score' => 'double'
+                            'name' => Type::STRING,
+                            'score' => Type::DOUBLE
                         ]
                     ]
                 ]
