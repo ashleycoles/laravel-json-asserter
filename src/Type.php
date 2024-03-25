@@ -2,6 +2,9 @@
 
 namespace AshC\JsonAsserter;
 
+use AshC\JsonAsserter\Types\ArrayType;
+use AshC\JsonAsserter\Types\ObjectType;
+
 enum Type: string
 {
     case STRING = 'string';
@@ -12,24 +15,13 @@ enum Type: string
     case ARRAY = 'array';
     case MISSING = 'missing';
 
-    public static function ARRAY(int $count, ?array $schema = null): array
+    public static function ARRAY(int $count, ?array $schema = null): ArrayType
     {
-        if (!$schema) {
-            return [
-                'count' => $count
-            ];
-        }
-
-        return [
-            'count' => $count,
-            'values' => $schema,
-        ];
+        return new ArrayType($count, $schema);
     }
 
-    public static function OBJECT(array $schema): array
+    public static function OBJECT(array $schema): ObjectType
     {
-        return [
-            'values' => $schema,
-        ];
+        return new ObjectType($schema);
     }
 }
