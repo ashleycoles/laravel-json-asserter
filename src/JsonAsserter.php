@@ -9,7 +9,7 @@ use Illuminate\Testing\Fluent\AssertableJson;
 
 trait JsonAsserter
 {
-    public function assertJsonHelper(AssertableJson $json, array $schema): void
+    public function assertJsonHelper(AssertableJson $json, ?array $schema): void
     {
         $presentFields = $this->getPresentFields($schema);
         $missingFields = $this->getMissingFields($schema);
@@ -20,13 +20,18 @@ trait JsonAsserter
 
         foreach ($nestedTypes as $field => $type) {
             $isTypeArray = isset($type['count']);
+            $typeHasValues = isset($type['values']);
 
             $assertions = function (AssertableJson $json) use ($type) {
-                $this->assertJsonHelper($json, $type['values']);
+                if (isset($type['values'])) {
+                    $this->assertJsonHelper($json, $type['values']);
+                }
             };
 
-            if ($isTypeArray) {
+            if ($isTypeArray && $typeHasValues) {
                 $json->has($field, $type['count'], $assertions);
+            } else if ($isTypeArray) {
+                $json->has($field, $type['count']);
             } else {
                 $json->has($field, $assertions);
             }

@@ -12,8 +12,14 @@ enum Type: string
     case ARRAY = 'array';
     case MISSING = 'missing';
 
-    public static function ARRAY(int $count, array $schema): array
+    public static function ARRAY(int $count, ?array $schema = null): array
     {
+        if (!$schema) {
+            return [
+                'count' => $count
+            ];
+        }
+
         return [
             'count' => $count,
             'values' => $schema,

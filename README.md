@@ -138,7 +138,7 @@ class ExampleTest extends TestCase
         ]),
     ]);
     ```
-- `Type::ARRAY(int $count, array $schema)`
+- `Type::ARRAY(int $count, ?array $schema)`
   - Used to assert the number of array items, and the structure of each item
     ```php
     $this->assertJsonHelper($assertableJson, [
@@ -148,3 +148,4 @@ class ExampleTest extends TestCase
         ]),
     ]);
     ```
+  - If no `$schema` is provided then only the length of the array will be tested

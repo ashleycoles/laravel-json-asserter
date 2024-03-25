@@ -103,6 +103,26 @@ class JsonAsserterTest extends TestCase
         ]);
     }
 
+    public function test_assertJsonHelper_nestSimpleArrayNoSchema(): void
+    {
+        $assertableJson = AssertableJson::fromArray([
+            'data' => [
+                [
+                    'id' => 1,
+                    'name' => 'foo',
+                ],
+                [
+                    'id' => 1,
+                    'name' => 'bar',
+                ],
+            ],
+        ]);
+
+        $this->assertJsonHelper($assertableJson, [
+            'data' => Type::ARRAY(2),
+        ]);
+    }
+
     public function test_assertJsonHelper_multipleNestedArrays(): void
     {
         $assertableJson = AssertableJson::fromArray([
