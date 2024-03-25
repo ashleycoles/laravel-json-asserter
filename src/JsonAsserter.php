@@ -42,6 +42,7 @@ trait JsonAsserter
             if (is_array($type) || $type->value === 'missing') {
                 return false;
             }
+
             return true;
         });
 
@@ -60,14 +61,14 @@ trait JsonAsserter
     private function getMissingFields(array $schema): array
     {
         return array_keys(array_filter($schema, function (Type|array $type) {
-            return !is_array($type) && $type->value === 'missing';
+            return ! is_array($type) && $type->value === 'missing';
         }));
     }
 
     private function getPresentFields(array $schema): array
     {
         return array_keys(array_filter($schema, function (Type|array $type) {
-            return !is_array($type) && $type->value !== 'missing';
+            return ! is_array($type) && $type->value !== 'missing';
         }));
     }
 }

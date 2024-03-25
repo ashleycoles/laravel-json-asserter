@@ -2,7 +2,6 @@
 
 require_once 'vendor/autoload.php';
 
-use AshC\JsonAsserter\Exceptions\InvalidJsonTypeException;
 use AshC\JsonAsserter\JsonAsserter;
 use AshC\JsonAsserter\Type;
 use Illuminate\Testing\Fluent\AssertableJson;
@@ -45,12 +44,10 @@ class JsonAsserterTest extends TestCase
 
         $this->assertJsonHelper($assertableJson, [
             'message' => Type::STRING,
-            'data' => [
-                'values' => [
-                    'id' => Type::INTEGER,
-                    'name' => Type::STRING,
-                ],
-            ],
+            'data' => Type::OBJECT([
+                'id' => Type::INTEGER,
+                'name' => Type::STRING,
+            ]),
         ]);
     }
 
@@ -71,21 +68,15 @@ class JsonAsserterTest extends TestCase
 
         $this->assertJsonHelper($assertableJson, [
             'message' => Type::STRING,
-            'data' => [
-                'values' => [
-                    'id' => Type::INTEGER,
-                    'name' => Type::STRING,
-                    'test' => [
-                        'values' => [
-                            'test' => [
-                                'values' => [
-                                    'foo' => Type::STRING,
-                                ],
-                            ],
-                        ],
-                    ],
-                ],
-            ],
+            'data' => Type::OBJECT([
+                'id' => Type::INTEGER,
+                'name' => Type::STRING,
+                'test' => Type::OBJECT([
+                    'test' => Type::OBJECT([
+                        'foo' => Type::STRING,
+                    ]),
+                ]),
+            ]),
         ]);
     }
 
@@ -105,13 +96,10 @@ class JsonAsserterTest extends TestCase
         ]);
 
         $this->assertJsonHelper($assertableJson, [
-            'data' => [
-                'count' => 2,
-                'values' => [
-                    'id' => Type::INTEGER,
-                    'name' => Type::STRING,
-                ],
-            ],
+            'data' => Type::ARRAY(2, [
+                'id' => Type::INTEGER,
+                'name' => Type::STRING,
+            ]),
         ]);
     }
 
@@ -132,21 +120,13 @@ class JsonAsserterTest extends TestCase
         ]);
 
         $this->assertJsonHelper($assertableJson, [
-            'data' => [
-                'count' => 1,
-                'values' => [
-                    'outer' => [
-                        'count' => 1,
-                        'values' => [
-                            'inner' => [
-                                'values' => [
-                                    'id' => Type::INTEGER
-                                ]
-                            ]
-                        ]
-                    ],
-                ],
-            ],
+            'data' => Type::ARRAY(1, [
+                'outer' => Type::ARRAY(1, [
+                    'inner' => Type::OBJECT([
+                        'id' => Type::INTEGER,
+                    ]),
+                ]),
+            ]),
         ]);
     }
 

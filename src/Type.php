@@ -8,8 +8,22 @@ enum Type: string
     case INTEGER = 'integer';
     case DOUBLE = 'double';
     case BOOLEAN = 'boolean';
-    CASE NULL = 'null';
-    CASE ARRAY = 'array';
-    CASE MISSING = 'missing';
+    case NULL = 'null';
+    case ARRAY = 'array';
+    case MISSING = 'missing';
 
+    public static function ARRAY(int $count, array $schema): array
+    {
+        return [
+            'count' => $count,
+            'values' => $schema,
+        ];
+    }
+
+    public static function OBJECT(array $schema): array
+    {
+        return [
+            'values' => $schema,
+        ];
+    }
 }
