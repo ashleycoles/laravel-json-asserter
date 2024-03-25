@@ -73,20 +73,20 @@ $response->assertJson(function (AssertableJson $json) {
         'data' => [
             'count' => 1,
             'values' => [
-                'id' => 'integer',
+                'id' => Type::INTEGER,
                 'name' => Type::STRING,
-                'age' => 'integer',
+                'age' => Type::INTEGER,
                 'start_date' => Type::STRING,
                 'contract' => [
                     'values' => [
-                        'id' => 'integer',
+                        'id' => Type::INTEGER,
                         'name' => Type::STRING
                     ]
                 ],
                 'certifications' => [
                     'count' => 1,
                     'values' => [
-                        'id' => 'integer',
+                        'id' => Type::INTEGER,
                         'name' => Type::STRING,
                         'description' => Type::STRING
                     ]
